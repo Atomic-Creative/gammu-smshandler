@@ -3,43 +3,33 @@ import os
 import sys
 import logging
 
-from datetime import datetime
+# Config
+
+config = {
+    'log_path': '/var/log/smshandler.log',
+    'log_format': '%(asctime)s %(levelname)s %(message)s',
+    'log_level': logging.WARNING,
+    'sms_storage_file': '/path/to/directory/where/to/store/messages.txt'
+}
+
+# Setting up logger
+
+logger = logging.getLogger('smshandler')
+hdlr = logging.FileHandler(config.get('log_path'))
+formatter = logging.Formatter(config.get('log_format'))
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr)
+logger.setLevel(config.get('log_level'))
 
 messages = []
 
-
-log = open("/home/satchitananda/Development/python/sms_handler/log.txt", 'a')
-log.write(str(datetime.now()) + "\n")
-
 try:
-    """log.write(str(sys.argv))
-    log.write("\n")
-    messages = os.environ['SMS_MESSAGES']
-    log.write(str(messages))
-    log.write("\n")
-
-    log.write("OS ENVIRON variable:")
-    log.write(str(os.environ))
-    log.write("\n")
-
-    with open("/home/satchitananda/Development/python/sms_handler/messages.txt", 'a') as messages_file:
-        counter = 1
-        for message in messages:
-            text = os.environ['SMS_%d_TEXT' % counter]
-            number = os.environ['SMS_%d_NUMBER' % counter]
-            log.write('SMS NUMBER: %s, SMS TEXT: %s' % (number, text))
-            log.write("\n")
-            messages_file.write(message)
-            counter+=1"""
-
-    log.write("OS ENVIRON variable:")
-    log.write(str(os.environ))
-    log.write("\n")
-
     numparts = int(os.environ['DECODED_PARTS'])
+
     # Are there any decoded parts?
+
     if numparts == 0 and not os.environ.get("SMS_1_TEXT"):
-        log.write('No decoded parts!\n')
+        logger.warn('No decoded parts!')
         sys.exit(1)
 
     # Get all text parts
@@ -54,11 +44,9 @@ try:
     else:
         text = os.environ.get("SMS_1_TEXT")
 
-    with open("/home/satchitananda/Development/python/sms_handler/messages.txt", 'a') as messages_file:
+    with open(config.get('sms_storage_file'), 'a') as messages_file:
         messages_file.write("Number %s have sent text: %s" % (os.environ['SMS_1_NUMBER'], text))
         messages_file.write("\n")
 
 except Exception as ex:
-    log.write(str(ex))
-
-log.close()
+    logger.error(ex)

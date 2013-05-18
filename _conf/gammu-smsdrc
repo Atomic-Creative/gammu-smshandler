@@ -11,7 +11,7 @@ connection = at115200
 # SMSD configuration, see gammu-smsdrc(5)
 [smsd]
 service = files
-logfile = /home/satchitananda/Development/python/sms_handler/gammu.log
+logfile = /var/log/gammu.log
 # Increase for debugging information
 debuglevel = 1
 
@@ -21,4 +21,4 @@ outboxpath = /var/spool/gammu/outbox/
 sentsmspath = /var/spool/gammu/sent/
 errorsmspath = /var/spool/gammu/error/
 
-RunOnReceive = /home/satchitananda/Development/python/sms_handler/receive.py
+RunOnReceive = /path/to/your/script/handler.py
